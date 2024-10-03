@@ -1,0 +1,65 @@
+// Get elements from the DOM
+const addRecipeBtn = document.getElementById('addRecipeBtn');
+const recipeList = document.getElementById('recipeList');
+
+// Retrieve existing recipes from local storage
+let recipes = JSON.parse(localStorage.getItem('recipes')) || [];
+
+// Function to display the recipes
+function displayRecipes() {
+  recipeList.innerHTML = ''; // Clear the list before displaying
+
+  recipes.forEach((recipe, index) => {
+    const recipeCard = document.createElement('div');
+    recipeCard.classList.add('recipe-card');
+
+    recipeCard.innerHTML = `
+      <img src="${recipe.image || 'https://via.placeholder.com/250'}" alt="Recipe Image">
+      <h3>${recipe.name}</h3>
+      <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
+      <p><strong>Instructions:</strong> ${recipe.instructions}</p>
+      <button class="delete-recipe" onclick="deleteRecipe(${index})">Delete</button>
+    `;
+
+    recipeList.appendChild(recipeCard);
+  });
+}
+
+// Add a new recipe
+addRecipeBtn.addEventListener('click', () => {
+  const recipeName = document.getElementById('recipeName').value;
+  const recipeIngredients = document.getElementById('recipeIngredients').value;
+  const recipeInstructions = document.getElementById('recipeInstructions').value;
+  const recipeImage = document.getElementById('recipeImage').value;
+
+  if (recipeName && recipeIngredients && recipeInstructions) {
+    const newRecipe = {
+      name: recipeName,
+      ingredients: recipeIngredients,
+      instructions: recipeInstructions,
+      image: recipeImage
+    };
+
+    recipes.push(newRecipe);
+    localStorage.setItem('recipes', JSON.stringify(recipes)); // Save to local storage
+    displayRecipes(); // Update the displayed list
+
+    // Clear the input fields
+    document.getElementById('recipeName').value = '';
+    document.getElementById('recipeIngredients').value = '';
+    document.getElementById('recipeInstructions').value = '';
+    document.getElementById('recipeImage').value = '';
+  } else {
+    alert('Please fill in all the fields');
+  }
+});
+
+// Delete a recipe
+function deleteRecipe(index) {
+  recipes.splice(index, 1);
+  localStorage.setItem('recipes', JSON.stringify(recipes)); // Update local storage
+  displayRecipes(); // Update the displayed list
+}
+
+// Display recipes on page load
+displayRecipes();
